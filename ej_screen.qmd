@@ -1,10 +1,15 @@
 ---
 title: "Analyzing Air Quality and Income Disparities in San Bernardino County, California"
 author: "Kate Frankland"
-format: pdf
+format: 
+  pdf: 
+    fig-width: 8
+    fig-height: 7
 execute:
   echo: true
   output: true
+  warning: false
+  message: false
 ---
 
 ## Research question
@@ -16,19 +21,19 @@ library(tidyverse)
 library(sf)
 library(here)
 library(tmap)
-
 tmap_mode("plot")
 ```
 
 ## Reading the EJScreen data 
 
 ```{r}
-ejscreen <- sf::st_read(
+ejscreen <- sf::st_read( #Read in EJScreen data
   here::here(
     "data",
     "ejscreen",
     "EJSCREEN_2023_BG_StatePct_with_AS_CNMI_GU_VI.gdb"
-  )
+  ),
+  quiet = TRUE # Used for pdf 
 )
 ```
 
@@ -58,32 +63,31 @@ san_bernardino_bg |>
 ```{r}
 #| fig-width: 8
 #| fig-height: 7
-
 # Map 1: Annual-average PM2.5 concentrations
 pm25_map <- tm_shape(san_bernardino_bg) +
   tm_polygons(
     fill = "PM25",
-    lwd = 0.1,
-    col = "white",
-    fill.scale = tm_scale_continuous(
+    lwd = 0.1, #creating borders 
+    col = "white",# setting border color 
+    fill.scale = tm_scale_continuous( #continuous color scale to see different concentration values 
       values = "viridis"
     ),
-    fill.legend = tm_legend(
+    fill.legend = tm_legend( #creating legend
       title = "Annual Average PM2.5\n(micrograms/m³)",
       orientation = "portrait",
       position = tm_pos_out(
         "center", "bottom",
-        pos.h = "left",
+        pos.h = "left", # legend alignment
         pos.v = "top"
       )
     )
   ) +
-  tm_compass(
+  tm_compass( #add North arrow 
     size = 2,
     text.size = 0.7,
-    position = tm_pos_in("right", "top")
+    position = tm_pos_in("right", "top") # put it in upper right corner 
   ) +
-  tm_scalebar(
+  tm_scalebar( # add scalebar
     width = 15,
     text.size = 0.7,
     position = tm_pos_out(
@@ -92,16 +96,20 @@ pm25_map <- tm_shape(san_bernardino_bg) +
       pos.v = "top" # vertical position 
     )
   ) +
-  tm_title(
+  tm_title( # add title 
     "Annual Average PM2.5 in San Bernardino County",
     size = 1,
     position = tm_pos_out(
-      "center", "top",
+      "center", "top", # title above map 
       pos.h = "left",# horizontal position 
       pos.v = "bottom"# vertical position 
     )
   )
+
+ pm25_map # Display map 
 ```
+
+
 
 # Map 2: Percentage of low-income residents
 ```{r}
@@ -111,11 +119,11 @@ pm25_map <- tm_shape(san_bernardino_bg) +
 income_map <- tm_shape(san_bernardino_bg) +
   tm_polygons(
     fill = "LOWINCPCT",
-    lwd = 0.1,
-    col = "white",
+    lwd = 0.1, # borders
+    col = "white", # borders 
     fill.scale = tm_scale_intervals( #creating intervals for more readable map
       style = "fixed",
-      breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1),
+      breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1), # 5 categories
       labels = c(
         "0–<20%",
         "20–<40%",
@@ -123,17 +131,17 @@ income_map <- tm_shape(san_bernardino_bg) +
         "60–<80%",
         "80–100%"),
       values = "viridis"),
-    fill.legend = tm_legend(
+    fill.legend = tm_legend( #map legend 
       title = "Low-Income Residents\n(% of population)",
       orientation = "portrait",
       position = tm_pos_out(
-        "center", "bottom",
+        "center", "bottom", # legend alignment 
         pos.h = "left", # horitzontal position 
         pos.v = "top" )) ) + # vertical position 
-  tm_compass(
+  tm_compass( # north arrow placement
     size = 2, text.size = 0.7,
     position = tm_pos_in("right", "top")) +
-  tm_scalebar(
+  tm_scalebar( #scalebar and its placement 
     width = 15,
     text.size = 0.7,
     position = tm_pos_out(
@@ -147,6 +155,7 @@ income_map <- tm_shape(san_bernardino_bg) +
       pos.h = "left", #horizontal position 
       pos.v = "bottom"  # veritcal position 
     ))
+    income_map # display map 
 ```
 
 ## Map Results 
