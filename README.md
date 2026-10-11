@@ -1,4 +1,4 @@
-# EDS 223 Homework 1: Air Quality and Income in San Bernardino County
+# EDS 223 Homework 1 - Map Making! 
 
 ## Repository Purpose
 This repository contains Homework 1 for EDS 223 - Geospatial Analysis and Remote Sensing. This homework assignment explores an environmental justice issue through two related maps. I decided to compare annual-average PM2.5 concentrations with the percentage of low-income residents across census block groups in San Bernardino County, California, and try and see if there was a correlation between them. 
