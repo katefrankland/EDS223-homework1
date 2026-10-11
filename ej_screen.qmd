@@ -1,0 +1,154 @@
+---
+title: "Analyzing Air Quality and Income Disparities in San Bernardino County, California"
+author: "Kate Frankland"
+format: pdf
+execute:
+  echo: true
+  output: true
+---
+
+## Research question
+How do PM2.5 levels compare with the percentage of low-income residents across census block groups in San Bernardino County?
+
+## Loading Packages 
+```{r}
+library(tidyverse)
+library(sf)
+library(here)
+library(tmap)
+
+tmap_mode("plot")
+```
+
+## Reading the EJScreen data 
+
+```{r}
+ejscreen <- sf::st_read(
+  here::here(
+    "data",
+    "ejscreen",
+    "EJSCREEN_2023_BG_StatePct_with_AS_CNMI_GU_VI.gdb"
+  )
+)
+```
+
+## Filtering to California 
+```{r}
+california <- ejscreen |> 
+  dplyr::filter(ST_ABBREV == "CA")
+```
+
+## Filtering the data to San Bernardino County in California 
+```{r}
+san_bernardino_bg <- california |> 
+  dplyr::filter(CNTY_NAME %in% c("San Bernardino County"))
+nrow(san_bernardino_bg)
+```
+
+# Check air quality and income values 
+```{r}
+san_bernardino_bg |>
+  sf::st_drop_geometry() |>
+  dplyr::select(ID, PM25, LOWINCPCT) |>
+  summary()
+```
+
+## Map 1, looking at PM 2.5 Levels in San Bernardino County, California 
+
+```{r}
+#| fig-width: 8
+#| fig-height: 7
+
+# Map 1: Annual-average PM2.5 concentrations
+tm_shape(san_bernardino_bg) +
+  tm_polygons(
+    fill = "PM25",
+    lwd = 0.1,
+    col = "white",
+    fill.scale = tm_scale_continuous(
+      values = "viridis"
+    ),
+    fill.legend = tm_legend(
+      title = "Annual Average PM2.5\n(micrograms/m³)",
+      orientation = "portrait",
+      position = tm_pos_out(
+        "center", "bottom",
+        pos.h = "left",
+        pos.v = "top"
+      )
+    )
+  ) +
+  tm_compass(
+    size = 2,
+    text.size = 0.7,
+    position = tm_pos_in("right", "top")
+  ) +
+  tm_scalebar(
+    width = 15,
+    text.size = 0.7,
+    position = tm_pos_out(
+      "center", "bottom",
+      pos.h = "right", # horizontal position 
+      pos.v = "top" # vertical position 
+    )
+  ) +
+  tm_title(
+    "Annual Average PM2.5 in San Bernardino County",
+    size = 1,
+    position = tm_pos_out(
+      "center", "top",
+      pos.h = "left",# horizontal position 
+      pos.v = "bottom"# vertical position 
+    )
+  )
+```
+
+# Map 2: Percentage of low-income residents
+```{r}
+#| fig-width: 8
+#| fig-height: 7
+
+tm_shape(san_bernardino_bg) +
+  tm_polygons(
+    fill = "LOWINCPCT",
+    lwd = 0.1,
+    col = "white",
+    fill.scale = tm_scale_intervals( #creating intervals for more readable map
+      style = "fixed",
+      breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1),
+      labels = c(
+        "0–<20%",
+        "20–<40%",
+        "40–<60%",
+        "60–<80%",
+        "80–100%"),
+      values = "viridis"),
+    fill.legend = tm_legend(
+      title = "Low-Income Residents\n(% of population)",
+      orientation = "portrait",
+      position = tm_pos_out(
+        "center", "bottom",
+        pos.h = "left", # horitzontal position 
+        pos.v = "top" )) ) + # vertical position 
+  tm_compass(
+    size = 2, text.size = 0.7,
+    position = tm_pos_in("right", "top")) +
+  tm_scalebar(
+    width = 15,
+    text.size = 0.7,
+    position = tm_pos_out(
+      "center", "bottom",
+      pos.h = "right",
+      pos.v = "top")) +
+  tm_title( "Percentage of Low-Income Residents in San Bernardino County",
+    size = 1,
+    position = tm_pos_out(
+      "center", "top",
+      pos.h = "left", #horizontal position 
+      pos.v = "bottom"  # veritcal position 
+    ))
+```
+
+## Map Results 
+The first map shows annual-average PM2.5 concentrations across census block groups in San Bernardino County. Concentrations are higher in the southwestern area of the county, while the northern and eastern areas have lower concentrations. The second map shows the percentage of lowm  income residents in the county, and its pattern differs from the first map. In the southwestern area, there is a mix of block groups with both low and high percentages of low income residents. Some block groups farther north have higher percentages of low income residents and lower PM2.5 concentrations. Together, the maps suggest that higher PM2.5 concentrations do not consistently overlap with higher percentages of low-income residents across the county. It may be beneficial to examine the southwestern region more closely to determine whether block groups with higher percentages of low-income residents also tend to have higher PM2.5 concentrations within that condensed region.
+
