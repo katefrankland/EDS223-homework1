@@ -60,7 +60,7 @@ san_bernardino_bg |>
 #| fig-height: 7
 
 # Map 1: Annual-average PM2.5 concentrations
-tm_shape(san_bernardino_bg) +
+pm25_map <- tm_shape(san_bernardino_bg) +
   tm_polygons(
     fill = "PM25",
     lwd = 0.1,
@@ -108,7 +108,7 @@ tm_shape(san_bernardino_bg) +
 #| fig-width: 8
 #| fig-height: 7
 
-tm_shape(san_bernardino_bg) +
+income_map <- tm_shape(san_bernardino_bg) +
   tm_polygons(
     fill = "LOWINCPCT",
     lwd = 0.1,
@@ -151,4 +151,3 @@ tm_shape(san_bernardino_bg) +
 
 ## Map Results 
 The first map shows annual-average PM2.5 concentrations across census block groups in San Bernardino County. Concentrations are higher in the southwestern area of the county, while the northern and eastern areas have lower concentrations. The second map shows the percentage of lowm  income residents in the county, and its pattern differs from the first map. In the southwestern area, there is a mix of block groups with both low and high percentages of low income residents. Some block groups farther north have higher percentages of low income residents and lower PM2.5 concentrations. Together, the maps suggest that higher PM2.5 concentrations do not consistently overlap with higher percentages of low-income residents across the county. It may be beneficial to examine the southwestern region more closely to determine whether block groups with higher percentages of low-income residents also tend to have higher PM2.5 concentrations within that condensed region.
-
